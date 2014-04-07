@@ -3,6 +3,7 @@ package org.ubhave.anticipatorymiddleware.server.predictor;
 
 import java.util.ArrayList;
 
+import org.json.JSONObject;
 import org.ubhave.anticipatorymiddleware.server.predictordata.PredictionResult;
 import org.ubhave.anticipatorymiddleware.server.predictordata.PredictorData;
 import org.ubhave.anticipatorymiddleware.server.time.Time;
@@ -17,7 +18,10 @@ public class Predictor{
 		this.predictor_id = predictor_id;
 	}
 
-
+	public PredictorData predictionRequest(JSONObject predictor_model){
+		
+		return null;
+	}
 
 	/**
 	 * Returns the {@link PredictorData} for the predictor.
