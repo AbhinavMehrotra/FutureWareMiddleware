@@ -3,7 +3,7 @@ package org.ubhave.anticipatorymiddleware.server.predictordata;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import org.ubhave.anticipatorymiddleware.server.Constants;
+import org.ubhave.anticipatorymiddleware.server.utils.Constants;
 
 
 public abstract class PredictorData implements Serializable{

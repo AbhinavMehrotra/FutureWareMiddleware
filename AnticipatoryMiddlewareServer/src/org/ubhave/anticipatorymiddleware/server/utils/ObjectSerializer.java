@@ -1,4 +1,4 @@
-package org.ubhave.anticipatorymiddleware.server;
+package org.ubhave.anticipatorymiddleware.server.utils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

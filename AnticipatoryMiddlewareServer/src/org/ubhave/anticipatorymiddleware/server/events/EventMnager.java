@@ -10,16 +10,15 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.ubhave.anticipatorymiddleware.server.AMException;
 import org.ubhave.anticipatorymiddleware.server.AnticipatoryManager;
-import org.ubhave.anticipatorymiddleware.server.Constants;
-import org.ubhave.anticipatorymiddleware.server.ObjectSerializer;
 import org.ubhave.anticipatorymiddleware.server.communication.JSONKeys;
 import org.ubhave.anticipatorymiddleware.server.communication.MQTTManager;
 import org.ubhave.anticipatorymiddleware.server.communication.MessageType;
 import org.ubhave.anticipatorymiddleware.server.database.MongoDBManager;
-import org.ubhave.anticipatorymiddleware.server.datastack.PredictionResultStack;
-import org.ubhave.anticipatorymiddleware.server.datastack.PredictionResultStack.StackedGroupPredictorData;
+import org.ubhave.anticipatorymiddleware.server.events.PredictionResultStack.StackedGroupPredictorData;
 import org.ubhave.anticipatorymiddleware.server.predictor.Predictor;
 import org.ubhave.anticipatorymiddleware.server.predictordata.PredictorData;
+import org.ubhave.anticipatorymiddleware.server.utils.Constants;
+import org.ubhave.anticipatorymiddleware.server.utils.ObjectSerializer;
 
 public class EventMnager {
 

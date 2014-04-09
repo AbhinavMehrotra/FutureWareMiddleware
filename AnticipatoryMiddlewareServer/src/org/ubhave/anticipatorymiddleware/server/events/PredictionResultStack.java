@@ -1,4 +1,4 @@
-package org.ubhave.anticipatorymiddleware.server.datastack;
+package org.ubhave.anticipatorymiddleware.server.events;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -9,24 +9,24 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.ubhave.anticipatorymiddleware.server.AnticipatoryManager;
-import org.ubhave.anticipatorymiddleware.server.ObjectSerializer;
 import org.ubhave.anticipatorymiddleware.server.communication.JSONKeys;
 import org.ubhave.anticipatorymiddleware.server.communication.MQTTManager;
 import org.ubhave.anticipatorymiddleware.server.communication.MessageType;
 import org.ubhave.anticipatorymiddleware.server.predictordata.PredictionResult;
 import org.ubhave.anticipatorymiddleware.server.predictordata.PredictorData;
 import org.ubhave.anticipatorymiddleware.server.time.Time;
+import org.ubhave.anticipatorymiddleware.server.utils.ObjectSerializer;
 
 public class PredictionResultStack {
 	
 	private static Set<StackedGroupPredictorData> prediction_result_stack = new HashSet<StackedGroupPredictorData>();
 
-	public static void addNewPredictionResult(int subscription_id, String requestor_id, Set<String> required_users, PredictorData predictor_data){
+	protected static void addNewPredictionResult(int subscription_id, String requestor_id, Set<String> required_users, PredictorData predictor_data){
 		StackedGroupPredictorData.addNewResult(subscription_id, requestor_id, required_users, predictor_data);
 		checkSuccessOfStackedDataForGroupPrediction();
 	}
 
-	public static StackedGroupPredictorData getPredictionResultById(int subscription_id){
+	protected static StackedGroupPredictorData getPredictionResultById(int subscription_id){
 		for(StackedGroupPredictorData pr: prediction_result_stack){
 			if(pr.getSubscriptionId() == subscription_id){
 				return pr;

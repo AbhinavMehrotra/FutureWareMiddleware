@@ -1,4 +1,4 @@
-package org.ubhave.anticipatorymiddleware.server;
+package org.ubhave.anticipatorymiddleware.server.utils;
 
 
 public class Constants {
