@@ -10,18 +10,20 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.ubhave.anticipatorymiddleware.server.AMException;
 import org.ubhave.anticipatorymiddleware.server.AnticipatoryManager;
+import org.ubhave.anticipatorymiddleware.server.Constants;
 import org.ubhave.anticipatorymiddleware.server.ObjectSerializer;
 import org.ubhave.anticipatorymiddleware.server.communication.JSONKeys;
 import org.ubhave.anticipatorymiddleware.server.communication.MQTTManager;
 import org.ubhave.anticipatorymiddleware.server.communication.MessageType;
 import org.ubhave.anticipatorymiddleware.server.database.MongoDBManager;
 import org.ubhave.anticipatorymiddleware.server.datastack.PredictionResultStack;
-import org.ubhave.anticipatorymiddleware.server.datastack.PredictionResultStack.PredictionResult;
+import org.ubhave.anticipatorymiddleware.server.datastack.PredictionResultStack.StackedGroupPredictorData;
+import org.ubhave.anticipatorymiddleware.server.predictor.Predictor;
 import org.ubhave.anticipatorymiddleware.server.predictordata.PredictorData;
 
 public class EventMnager {
 
-	public void onNewGroupPredictionRequest(int subscription_id, String requestor_id, Set<String> friend_ids, int predictor_type){
+	public void onNewGroupPredictionRequest(int subscription_id, String requestor_id, Set<String> friend_ids, int predictor_type, String state_to_be_predicted){
 		/*TODO
 		 * check if the required data is present locally
 		 * if so, then make prediction and transmit the group prediction response.
@@ -34,10 +36,14 @@ public class EventMnager {
 		try {
 			MongoDBManager mongodb_manager = AnticipatoryManager.getInstance().getMongoDBManager();
 			for(String id: group_ids){
-				JSONObject prediction_model = mongodb_manager.geteUserPredictionModel(id);
-				if(prediction_model != null){
+				JSONObject predictor_model = mongodb_manager.geteUserPredictionModel(id);
+				if(predictor_model != null){
 					//TODO: make prediction for this user
-					PredictorData predictor_data = null;
+					int context_sampling_rate = mongodb_manager.getUserContextSamplingRate(id);
+					int context_life_cycle = mongodb_manager.getUserContextLifeCyclePeriod(id);
+					String current_state = mongodb_manager.geteUserContext(id, Constants.getSensor(predictor_type));
+					Predictor predictor = new Predictor(predictor_type, context_sampling_rate, context_life_cycle);
+					PredictorData predictor_data = predictor.predictionRequest(predictor_model, current_state, state_to_be_predicted);
 					
 					//add prediction data to the stack
 					PredictionResultStack.addNewPredictionResult(subscription_id, requestor_id, group_ids, predictor_data);
@@ -62,7 +68,7 @@ public class EventMnager {
 		try {
 			int subscription_id = obj.getInt(JSONKeys.SUBSCRIPTION_ID);
 			String predictor_data_string = obj.getString(JSONKeys.PREDICTOR_DATA);
-			PredictionResult pr = PredictionResultStack.getPredictionResultById(subscription_id);
+			StackedGroupPredictorData pr = PredictionResultStack.getPredictionResultById(subscription_id);
 			PredictorData predictor_data = (PredictorData) ObjectSerializer.fromString(predictor_data_string);
 			if(pr != null){
 				PredictionResultStack.addNewPredictionResult(subscription_id, pr.getRequestorId(), pr.getRequiredUsers(), predictor_data);

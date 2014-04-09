@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 import org.ubhave.anticipatorymiddleware.server.Constants;
-import org.ubhave.anticipatorymiddleware.server.time.Time;
 
 
 public abstract class PredictorData implements Serializable{
@@ -17,17 +16,11 @@ public abstract class PredictorData implements Serializable{
 
 	public abstract int getPredictorType();
 
-	public abstract Time getPredictedTime();
-	
-//	public abstract long getTimeRemaining();
-
 	public abstract PredictionResult getMostProbableResult();
 
 	public abstract ArrayList<PredictionResult> getResult();
 
-	public abstract void setResult(ArrayList<PredictionResult> result);		
-
-	public abstract void setPredictedTime(Time time);
+	public abstract void setResult(ArrayList<PredictionResult> result);	
 
 	public static PredictorData getInstance(int predictor_type){
 		switch (predictor_type){

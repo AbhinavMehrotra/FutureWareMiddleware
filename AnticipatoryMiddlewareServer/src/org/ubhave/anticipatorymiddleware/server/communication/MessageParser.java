@@ -80,7 +80,19 @@ public class MessageParser {
 					e.printStackTrace();
 				}
 				GroupPredictionRequestStack.onNewUserOrPrivacyModification();
-				break;				
+				break;
+				
+			case 8:
+				//USER_CONTEXT
+				try {
+					MongoDBManager mongo_db = AnticipatoryManager.getInstance().getMongoDBManager();
+					mongo_db.updateUserContext(obj);
+				} catch (UnknownHostException e) {
+					e.printStackTrace();
+				} catch (AMException e) {
+					e.printStackTrace();
+				}
+				break;
 			}
 
 		} catch (JSONException e) {
@@ -95,7 +107,8 @@ public class MessageParser {
 		if(name.equalsIgnoreCase(MessageType.REMOTE_PREDICTION_REQUEST)) return 4;
 		if(name.equalsIgnoreCase(MessageType.REMOTE_PREDICTION_RESPONSE)) return 5;	
 		if(name.equalsIgnoreCase(MessageType.UPDATED_PREDICTION_MODEL)) return 6;	
-		if(name.equalsIgnoreCase(MessageType.UPDATED_PRIVACY_POLICY)) return 7;		
+		if(name.equalsIgnoreCase(MessageType.UPDATED_PRIVACY_POLICY)) return 7;			
+		if(name.equalsIgnoreCase(MessageType.USER_CONTEXT)) return 8;		
 		return 0;
 	}
 

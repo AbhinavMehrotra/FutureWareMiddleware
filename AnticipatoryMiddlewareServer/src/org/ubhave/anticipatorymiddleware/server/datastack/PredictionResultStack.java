@@ -1,6 +1,7 @@
 package org.ubhave.anticipatorymiddleware.server.datastack;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -12,19 +13,21 @@ import org.ubhave.anticipatorymiddleware.server.ObjectSerializer;
 import org.ubhave.anticipatorymiddleware.server.communication.JSONKeys;
 import org.ubhave.anticipatorymiddleware.server.communication.MQTTManager;
 import org.ubhave.anticipatorymiddleware.server.communication.MessageType;
+import org.ubhave.anticipatorymiddleware.server.predictordata.PredictionResult;
 import org.ubhave.anticipatorymiddleware.server.predictordata.PredictorData;
+import org.ubhave.anticipatorymiddleware.server.time.Time;
 
 public class PredictionResultStack {
 	
-	private static Set<PredictionResult> prediction_result_stack = new HashSet<PredictionResult>();
+	private static Set<StackedGroupPredictorData> prediction_result_stack = new HashSet<StackedGroupPredictorData>();
 
 	public static void addNewPredictionResult(int subscription_id, String requestor_id, Set<String> required_users, PredictorData predictor_data){
-		PredictionResult.addNewResult(subscription_id, requestor_id, required_users, predictor_data);
+		StackedGroupPredictorData.addNewResult(subscription_id, requestor_id, required_users, predictor_data);
 		checkSuccessOfStackedDataForGroupPrediction();
 	}
 
-	public static PredictionResult getPredictionResultById(int subscription_id){
-		for(PredictionResult pr: prediction_result_stack){
+	public static StackedGroupPredictorData getPredictionResultById(int subscription_id){
+		for(StackedGroupPredictorData pr: prediction_result_stack){
 			if(pr.getSubscriptionId() == subscription_id){
 				return pr;
 			}
@@ -33,7 +36,7 @@ public class PredictionResultStack {
 	}
 	
 	private static void checkSuccessOfStackedDataForGroupPrediction(){
-		for(PredictionResult pr: prediction_result_stack){
+		for(StackedGroupPredictorData pr: prediction_result_stack){
 			if(pr.getRequiredUsers().size() == pr.getPredictorDataSet().size()){
 				PredictorData predictor_data = makeGroupPrediction(pr);
 				if(predictor_data != null){
@@ -58,20 +61,77 @@ public class PredictionResultStack {
 		}
 	}
 
-	private static PredictorData makeGroupPrediction(PredictionResult prediction_result){
-		//TODO
-		return null;
+	private static PredictorData makeGroupPrediction(StackedGroupPredictorData prediction_result){
+		Set<PredictorData> predictor_data_set = prediction_result.getPredictorDataSet();
+		int predictor_type = 0;
+		String predicted_state = "UNKNOWN";
+		int prediction_probability = 0;
+		int prediction_confidence_level = 0;
+		for(PredictorData pd : predictor_data_set){
+			predictor_type = pd.getPredictorType();
+			ArrayList<PredictionResult> pr_list = pd.getResult();
+			PredictionResult pr = pr_list.get(0);
+			predicted_state = pr.getPredictedState();
+			prediction_confidence_level = pr.getPredictionConfidenceLevel();
+			prediction_probability = pr.getPredictionProbability();
+			break;
+		}
+		
+		Set<Time> time_result = new HashSet<Time>();
+		ArrayList<Set<Time>> time_list = new ArrayList<Set<Time>>();
+		for(PredictorData pd : predictor_data_set){
+			ArrayList<PredictionResult> pr_list = pd.getResult();
+			Set<Time> time_set = new HashSet<Time>();
+			for(PredictionResult pr : pr_list){
+				time_set.add(pr.getPredictedTime());
+			}
+			time_list.add(time_set);
+		}
+
+		for(int i=0; i<time_list.size(); i++){
+			Set<Time> time_set = time_list.get(i);
+			for(Time time : time_set){
+				if(isPresentInAllSets(time_list, time)){
+					time_result.add(time);
+				}
+			}
+		}
+		PredictorData result = PredictorData.getInstance(predictor_type);
+		ArrayList<PredictionResult> predictor_result_set = new ArrayList<PredictionResult>();
+		for(Time time : time_result){
+			PredictionResult pr = new PredictionResult(predicted_state, time, prediction_probability, prediction_confidence_level);
+			predictor_result_set.add(pr);
+		}
+		result.setResult(predictor_result_set);		
+		return result;
+	}
+	
+	private static boolean isPresentInAllSets(ArrayList<Set<Time>> time_list, Time time){
+		boolean[] results = new boolean[time_list.size()];
+		for(int i=0; i<time_list.size(); i++){
+			if(time_list.get(i).contains(time)){
+				results[i] = true;
+			}
+			else{
+				results[i] = false;
+			}
+		}
+		for(boolean result: results){
+			if(result == false)
+				return false;
+		}
+		return true;
 	}
 	
 	
 	
-	public static class PredictionResult{
+	public static class StackedGroupPredictorData{
 		private int subscription_id;
 		String requestor_id;
 		Set<String> required_users;
 		Set<PredictorData> predictor_data_set;
 		
-		private PredictionResult(int subscription_id, String requestor_id, Set<String> required_users, PredictorData predictor_data) {
+		private StackedGroupPredictorData(int subscription_id, String requestor_id, Set<String> required_users, PredictorData predictor_data) {
 			this.subscription_id = subscription_id;
 			this.requestor_id = requestor_id;
 			this.required_users = required_users;
@@ -80,15 +140,15 @@ public class PredictionResultStack {
 		}
 		
 		public static void addNewResult(int subscription_id, String requestor_id, Set<String> required_users, PredictorData predictor_data){
-			PredictionResult prediction_result = null;
-			for (PredictionResult pr : prediction_result_stack){
+			StackedGroupPredictorData prediction_result = null;
+			for (StackedGroupPredictorData pr : prediction_result_stack){
 				if(pr.getSubscriptionId() == subscription_id){
 					prediction_result = pr;
 					break;
 				}
 			}
 			if(prediction_result == null){
-				prediction_result = new PredictionResult(subscription_id, requestor_id, required_users, predictor_data);
+				prediction_result = new StackedGroupPredictorData(subscription_id, requestor_id, required_users, predictor_data);
 				prediction_result_stack.add(prediction_result);
 			}
 			else{

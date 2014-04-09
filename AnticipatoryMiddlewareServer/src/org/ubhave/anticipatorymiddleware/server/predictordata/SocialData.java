@@ -3,7 +3,6 @@ package org.ubhave.anticipatorymiddleware.server.predictordata;
 import java.util.ArrayList;
 
 import org.ubhave.anticipatorymiddleware.server.Constants;
-import org.ubhave.anticipatorymiddleware.server.time.Time;
 
 public class SocialData  extends PredictorData{
 
@@ -12,29 +11,17 @@ public class SocialData  extends PredictorData{
 
 	private final int predictor_type = Constants.PREDICTOR_TYPE_SOCIAL;
 
-	private Time predicted_time;
-
 	private ArrayList<PredictionResult> result;
 
 	protected SocialData(){};
 
-	public SocialData(Time predicted_time, ArrayList<PredictionResult> result){
-		this.predicted_time = predicted_time;
+	public SocialData(ArrayList<PredictionResult> result){
 		this.result = result;
 	}
 
 	@Override
 	public int getPredictorType() {
 		return this.predictor_type;
-	}
-
-	@Override
-	public Time getPredictedTime() {
-		return this.predicted_time;
-	}
-	@Override
-	public void setPredictedTime(Time time) {
-		this.predicted_time = time;
 	}
 
 	@Override

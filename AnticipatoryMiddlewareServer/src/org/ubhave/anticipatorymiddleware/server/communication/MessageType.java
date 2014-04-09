@@ -16,4 +16,6 @@ public class MessageType {
 
 	public static final String GROUP_PREDICTION_RESPONSE = "GROUP_PREDICTION_RESPONSE";
 
+	public static final String USER_CONTEXT = "USER_CONTEXT";
+
 }

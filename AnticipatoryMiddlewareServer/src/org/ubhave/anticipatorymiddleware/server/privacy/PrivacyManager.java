@@ -22,6 +22,7 @@ public class PrivacyManager {
 			String user_id = obj.getString(JSONKeys.USER_ID);
 			int subscription_id = obj.getInt(JSONKeys.SUBSCRIPTION_ID);
 			int predictor_id = obj.getInt(JSONKeys.PREDICTOR_TYPE);
+			String state_to_be_predicted = obj.getString(JSONKeys.STATE_TO_BE_PREDICTED);
 			JSONArray friend_ids_array = obj.getJSONArray(JSONKeys.FRIEND_IDS);
 			Set<String> friend_ids = new HashSet<String>();
 			for(int i = 0; i<friend_ids_array.length(); i++){
@@ -29,7 +30,7 @@ public class PrivacyManager {
 			}
 			boolean privacy_check = hasAccess(user_id, friend_ids, predictor_id);
 			if(privacy_check){
-				new EventMnager().onNewGroupPredictionRequest(subscription_id, user_id, friend_ids, predictor_id);
+				new EventMnager().onNewGroupPredictionRequest(subscription_id, user_id, friend_ids, predictor_id, state_to_be_predicted);
 				return true;
 			}
 			else{

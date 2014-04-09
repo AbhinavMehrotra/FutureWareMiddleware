@@ -3,7 +3,6 @@ package org.ubhave.anticipatorymiddleware.server.predictordata;
 import java.util.ArrayList;
 
 import org.ubhave.anticipatorymiddleware.server.Constants;
-import org.ubhave.anticipatorymiddleware.server.time.Time;
 
 public class ActivityData  extends PredictorData{
 
@@ -13,29 +12,17 @@ public class ActivityData  extends PredictorData{
 
 	private final int predictor_type = Constants.PREDICTOR_TYPE_ACTIVITY;
 
-	private Time predicted_time;
-
 	private ArrayList<PredictionResult> result;
 
 	protected ActivityData(){};
 
-	public ActivityData(Time predicted_time, ArrayList<PredictionResult> result){
-		this.predicted_time = predicted_time;
+	public ActivityData(ArrayList<PredictionResult> result){
 		this.result = result;
 	}
 
 	@Override
 	public int getPredictorType() {
 		return this.predictor_type;
-	}
-
-	@Override
-	public Time getPredictedTime() {
-		return this.predicted_time;
-	}
-	@Override
-	public void setPredictedTime(Time time) {
-		this.predicted_time = time;
 	}
 
 	@Override
