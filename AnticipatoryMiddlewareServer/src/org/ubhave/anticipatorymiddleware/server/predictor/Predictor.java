@@ -26,9 +26,9 @@ public class Predictor{
 	}
 
 
-	public PredictorData predictionRequest(JSONObject predictor_model, String current_state, String state_to_be_predicted){
+	public PredictorData predictionRequest(JSONObject predictor_model, String state_to_be_predicted){
 		MarkovChainPredictor makrok_chain_predictor = new MarkovChainPredictor(predictor_id, context_sampling_rate, context_life_cycle);
-		PredictorData predictor_data = makrok_chain_predictor.predictionRequest(predictor_model, current_state, state_to_be_predicted);
+		PredictorData predictor_data = makrok_chain_predictor.predictionRequest(predictor_model, state_to_be_predicted);
 		if(predictor_data == null){
 			System.out.println("MarkovChainPredictor returned null value!");
 		}		

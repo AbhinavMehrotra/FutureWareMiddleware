@@ -40,9 +40,9 @@ public class EventMnager {
 					//TODO: make prediction for this user
 					int context_sampling_rate = mongodb_manager.getUserContextSamplingRate(id);
 					int context_life_cycle = mongodb_manager.getUserContextLifeCyclePeriod(id);
-					String current_state = mongodb_manager.geteUserContext(id, Constants.getSensor(predictor_type));
+//					String current_state = mongodb_manager.geteUserContext(id, Constants.getSensor(predictor_type));
 					Predictor predictor = new Predictor(predictor_type, context_sampling_rate, context_life_cycle);
-					PredictorData predictor_data = predictor.predictionRequest(predictor_model, current_state, state_to_be_predicted);
+					PredictorData predictor_data = predictor.predictionRequest(predictor_model, state_to_be_predicted);
 					
 					//add prediction data to the stack
 					PredictionResultStack.addNewPredictionResult(subscription_id, requestor_id, group_ids, predictor_data);

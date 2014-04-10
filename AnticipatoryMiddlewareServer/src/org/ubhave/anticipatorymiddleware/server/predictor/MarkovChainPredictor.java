@@ -25,7 +25,7 @@ public class MarkovChainPredictor implements PredictorInterface{
 	}
 
 	@Override
-	public PredictorData predictionRequest(JSONObject predictor_model, String current_state, String state_to_be_predicted){
+	public PredictorData predictionRequest(JSONObject predictor_model, String state_to_be_predicted){
 		PredictorData predictor_data = PredictorData.getInstance(predictor_id);	
 
 		//use 1st from state and rest {1 to (number_of_samples_in_a_day-1)} from state
