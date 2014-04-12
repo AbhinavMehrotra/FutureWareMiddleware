@@ -58,6 +58,43 @@ public class EventMnager {
 		}		
 	}
 
+	public void onNewGroupPredictionRequest(int subscription_id, String requestor_id, Set<String> friend_ids, 
+			int predictor_type, long required_prediction_time){
+		/*TODO
+		 * check if the required data is present locally
+		 * if so, then make prediction and transmit the group prediction response.
+		 * if not make remote query (via remoteQuery) and 
+		 * put the prediction data (of the users of whom data is present locally) in stack
+		 */
+		Set<String> group_ids = new HashSet<String>();
+		group_ids.addAll(friend_ids);
+		group_ids.add(requestor_id);
+		try {
+			MongoDBManager mongodb_manager = AnticipatoryManager.getInstance().getMongoDBManager();
+			for(String id: group_ids){
+				JSONObject predictor_model = mongodb_manager.geteUserPredictionModel(id);
+				if(predictor_model != null){
+					//TODO: make prediction for this user
+					int context_sampling_rate = mongodb_manager.getUserContextSamplingRate(id);
+					int context_life_cycle = mongodb_manager.getUserContextLifeCyclePeriod(id);
+					String current_state = mongodb_manager.geteUserContext(id, Constants.getSensor(predictor_type));
+					Predictor predictor = new Predictor(predictor_type, context_sampling_rate, context_life_cycle);
+					PredictorData predictor_data = predictor.predictionRequest(predictor_model, current_state, required_prediction_time);
+					
+					//add prediction data to the stack
+					PredictionResultStack.addNewPredictionResult(subscription_id, requestor_id, group_ids, predictor_data);
+				}
+				else{
+					this.remoteQuery(subscription_id, id, requestor_id, predictor_type, required_prediction_time);				
+				}
+			}
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		} catch (AMException e) {
+			e.printStackTrace();
+		}		
+	}
+
 	public void onNewRemotePredictionResponse(JSONObject obj){
 		/*TODO
 		 * put this data in stack
@@ -85,7 +122,7 @@ public class EventMnager {
 		}
 
 	}
-	
+
 	private void  remoteQuery(int subscription_id, String user_id, String requestor_id, int predictor_type, String state_to_be_predicted){
 		try {
 			JSONObject query = new JSONObject();
@@ -93,8 +130,26 @@ public class EventMnager {
 			query.put(JSONKeys.SUBSCRIPTION_ID, subscription_id);
 			query.put(JSONKeys.REQUESTOR_ID, requestor_id);
 			query.put(JSONKeys.PREDICTOR_TYPE, predictor_type);
-			query.put(JSONKeys.PREDICTION_TYPE, JSONKeys.PREDICTION_TYPE_TIME_SPECIFIC);
+			query.put(JSONKeys.PREDICTION_TYPE, JSONKeys.PREDICTION_TYPE_STATE_SPECIFIC);
 			query.put(JSONKeys.PREDICTION_TYPE_VALUE, state_to_be_predicted);
+			MQTTManager mqtt_manager = AnticipatoryManager.getInstance().getMQTTManager(user_id);
+			mqtt_manager.publishToDevice(query);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		} catch (MqttException e) {
+			e.printStackTrace();
+		}		
+	}
+	
+	private void  remoteQuery(int subscription_id, String user_id, String requestor_id, int predictor_type, long required_prediction_time){
+		try {
+			JSONObject query = new JSONObject();
+			query.put(JSONKeys.DATA_TYPE, MessageType.REMOTE_PREDICTION_REQUEST);
+			query.put(JSONKeys.SUBSCRIPTION_ID, subscription_id);
+			query.put(JSONKeys.REQUESTOR_ID, requestor_id);
+			query.put(JSONKeys.PREDICTOR_TYPE, predictor_type);
+			query.put(JSONKeys.PREDICTION_TYPE, JSONKeys.PREDICTION_TYPE_TIME_SPECIFIC);
+			query.put(JSONKeys.PREDICTION_TYPE_VALUE, required_prediction_time);
 			MQTTManager mqtt_manager = AnticipatoryManager.getInstance().getMQTTManager(user_id);
 			mqtt_manager.publishToDevice(query);
 		} catch (JSONException e) {

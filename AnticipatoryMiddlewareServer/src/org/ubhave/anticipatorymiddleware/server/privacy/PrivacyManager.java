@@ -19,10 +19,18 @@ public class PrivacyManager {
 
 	public static boolean onNewGroupPredictionRequest(JSONObject obj, boolean stack_required){
 		try {
+			String state_to_be_predicted = "";
+			long required_prediction_time = 0;
 			String user_id = obj.getString(JSONKeys.USER_ID);
 			int subscription_id = obj.getInt(JSONKeys.SUBSCRIPTION_ID);
 			int predictor_id = obj.getInt(JSONKeys.PREDICTOR_TYPE);
-			String state_to_be_predicted = obj.getString(JSONKeys.STATE_TO_BE_PREDICTED);
+			String prediction_type = obj.getString(JSONKeys.PREDICTION_TYPE);
+			if(prediction_type.equals(JSONKeys.PREDICTION_TYPE_STATE_SPECIFIC)){
+				state_to_be_predicted = obj.getString(JSONKeys.PREDICTION_TYPE_VALUE);				
+			}
+			else{
+				required_prediction_time = obj.getLong(JSONKeys.PREDICTION_TYPE_VALUE);					
+			}
 			JSONArray friend_ids_array = obj.getJSONArray(JSONKeys.FRIEND_IDS);
 			Set<String> friend_ids = new HashSet<String>();
 			for(int i = 0; i<friend_ids_array.length(); i++){
@@ -30,8 +38,14 @@ public class PrivacyManager {
 			}
 			boolean privacy_check = hasAccess(user_id, friend_ids, predictor_id);
 			if(privacy_check){
-				new EventMnager().onNewGroupPredictionRequest(subscription_id, user_id, friend_ids, predictor_id, state_to_be_predicted);
-				return true;
+				if(prediction_type.equals(JSONKeys.PREDICTION_TYPE_STATE_SPECIFIC)){
+					new EventMnager().onNewGroupPredictionRequest(subscription_id, user_id, friend_ids, predictor_id, state_to_be_predicted);
+					return true;
+				}
+				else{
+					new EventMnager().onNewGroupPredictionRequest(subscription_id, user_id, friend_ids, predictor_id, required_prediction_time);
+					return true;					
+				}
 			}
 			else{
 				System.out.println("Privacy check failed!! \n User: "+user_id+ " is not allowed to" +
@@ -55,7 +69,7 @@ public class PrivacyManager {
 			JSONObject privacy_object = mongodb.getUserPrivacyPolicy(user_id);
 			JSONArray access_granted_friends_list = privacy_object.getJSONArray(JSONKeys.Access_Granted_Friends_List);
 			JSONArray access_granted_predictor_list = privacy_object.getJSONArray(JSONKeys.Access_Granted_Predictors_List);
-			
+
 			//check for friend read access
 			for(String friend_id: friend_ids){
 				privacy_result = false;
@@ -69,7 +83,7 @@ public class PrivacyManager {
 					return false;
 				}
 			}
-			
+
 			//check for allowed predictor			
 			if(access_granted_predictor_list.getInt(0) == -1){
 				return true;
