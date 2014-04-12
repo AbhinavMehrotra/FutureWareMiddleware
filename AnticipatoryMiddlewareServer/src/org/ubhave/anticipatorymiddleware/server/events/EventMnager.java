@@ -48,7 +48,7 @@ public class EventMnager {
 					PredictionResultStack.addNewPredictionResult(subscription_id, requestor_id, group_ids, predictor_data);
 				}
 				else{
-					this.remoteQuery(subscription_id, id, requestor_id, predictor_type);				
+					this.remoteQuery(subscription_id, id, requestor_id, predictor_type, state_to_be_predicted);				
 				}
 			}
 		} catch (UnknownHostException e) {
@@ -86,13 +86,15 @@ public class EventMnager {
 
 	}
 	
-	private void  remoteQuery(int subscription_id, String user_id, String requestor_id, int predictor_type){
+	private void  remoteQuery(int subscription_id, String user_id, String requestor_id, int predictor_type, String state_to_be_predicted){
 		try {
 			JSONObject query = new JSONObject();
 			query.put(JSONKeys.DATA_TYPE, MessageType.REMOTE_PREDICTION_REQUEST);
 			query.put(JSONKeys.SUBSCRIPTION_ID, subscription_id);
 			query.put(JSONKeys.REQUESTOR_ID, requestor_id);
 			query.put(JSONKeys.PREDICTOR_TYPE, predictor_type);
+			query.put(JSONKeys.PREDICTION_TYPE, JSONKeys.PREDICTION_TYPE_TIME_SPECIFIC);
+			query.put(JSONKeys.PREDICTION_TYPE_VALUE, state_to_be_predicted);
 			MQTTManager mqtt_manager = AnticipatoryManager.getInstance().getMQTTManager(user_id);
 			mqtt_manager.publishToDevice(query);
 		} catch (JSONException e) {

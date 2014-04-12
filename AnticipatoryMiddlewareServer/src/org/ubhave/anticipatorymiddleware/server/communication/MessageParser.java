@@ -93,6 +93,30 @@ public class MessageParser {
 					e.printStackTrace();
 				}
 				break;
+				
+			case 9:
+				//Context_SAMPLING_RATE
+				try {
+					MongoDBManager mongo_db = AnticipatoryManager.getInstance().getMongoDBManager();
+					mongo_db.updateContextSamplingRate(obj);
+				} catch (UnknownHostException e) {
+					e.printStackTrace();
+				} catch (AMException e) {
+					e.printStackTrace();
+				}
+				break;
+				
+			case 10:
+				//Context_Life_Cycle_Period
+				try {
+					MongoDBManager mongo_db = AnticipatoryManager.getInstance().getMongoDBManager();
+					mongo_db.updateContextLifeCyclePeriod(obj);
+				} catch (UnknownHostException e) {
+					e.printStackTrace();
+				} catch (AMException e) {
+					e.printStackTrace();
+				}
+				break;
 			}
 
 		} catch (JSONException e) {
@@ -108,7 +132,9 @@ public class MessageParser {
 		if(name.equalsIgnoreCase(MessageType.REMOTE_PREDICTION_RESPONSE)) return 5;	
 		if(name.equalsIgnoreCase(MessageType.UPDATED_PREDICTION_MODEL)) return 6;	
 		if(name.equalsIgnoreCase(MessageType.UPDATED_PRIVACY_POLICY)) return 7;			
-		if(name.equalsIgnoreCase(MessageType.USER_CONTEXT)) return 8;		
+		if(name.equalsIgnoreCase(MessageType.USER_CONTEXT)) return 8;				
+		if(name.equalsIgnoreCase(MessageType.Context_SAMPLING_RATE)) return 9;				
+		if(name.equalsIgnoreCase(MessageType.Context_Life_Cycle_Period)) return 10;		
 		return 0;
 	}
 

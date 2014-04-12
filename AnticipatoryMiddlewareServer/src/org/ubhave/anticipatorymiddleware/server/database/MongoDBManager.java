@@ -159,7 +159,7 @@ public class MongoDBManager {
 			doc.append(MongoDBUtils.Key_Type_Sensor_Type(sensor_type), context);
 			coll.save(doc);
 		}
-	}	
+	}
 
 	public String geteUserContext(String user_id, int sensor_type){
 		DBCollection coll = db.getCollection(MongoDBUtils.Collection_Type_User_Prediction_Model);
@@ -173,5 +173,46 @@ public class MongoDBManager {
 		}
 		return null;
 	}
+
+
+	public void updateContextLifeCyclePeriod(JSONObject obj) throws JSONException{
+		String user_id = obj.getString(JSONKeys.USER_ID);
+		int context_life_cycle_period = obj.getInt(JSONKeys.CONTEXT_LIFE_CYCLE_PERIOD);
+		DBCollection coll = db.getCollection(MongoDBUtils.Collection_Type_User_Registration);
+		BasicDBObject doc=new BasicDBObject();
+		doc.append(MongoDBUtils.Key_Type_User_Id, user_id);
+		DBCursor cursor = coll.find(doc);
+		if(cursor.count()>0){
+			//if user registration is already present then remove the old prediction data
+			DBObject db_object = cursor.curr();
+			db_object.removeField(MongoDBUtils.Key_Type_User_Context_Life_Cycle_Period);
+			db_object.put(MongoDBUtils.Key_Type_User_Context_Life_Cycle_Period, context_life_cycle_period);
+			coll.save(db_object);
+		}
+		else{
+			doc.append(MongoDBUtils.Key_Type_User_Context_Life_Cycle_Period, context_life_cycle_period);
+			coll.save(doc);
+		}
+	}
+
+	public void updateContextSamplingRate(JSONObject obj) throws JSONException{
+		String user_id = obj.getString(JSONKeys.USER_ID);
+		int context_sampling_rate = obj.getInt(JSONKeys.CONTEXT_SAMPLING_RATE);
+		DBCollection coll = db.getCollection(MongoDBUtils.Collection_Type_User_Registration);
+		BasicDBObject doc=new BasicDBObject();
+		doc.append(MongoDBUtils.Key_Type_User_Id, user_id);
+		DBCursor cursor = coll.find(doc);
+		if(cursor.count()>0){
+			//if user registration is already present then remove the old prediction data
+			DBObject db_object = cursor.curr();
+			db_object.removeField(MongoDBUtils.Key_Type_User_Context_Sampling_Rate);
+			db_object.put(MongoDBUtils.Key_Type_User_Context_Sampling_Rate, context_sampling_rate);
+			coll.save(db_object);
+		}
+		else{
+			doc.append(MongoDBUtils.Key_Type_User_Context_Sampling_Rate, context_sampling_rate);
+			coll.save(doc);
+		}
+	}	
 	
 }

@@ -18,4 +18,8 @@ public class MessageType {
 
 	public static final String USER_CONTEXT = "USER_CONTEXT";
 
+	public static final String Context_Life_Cycle_Period = "Context_Life_Cycle_Period";
+
+	public static final String Context_SAMPLING_RATE = "Context_SAMPLING_RATE";
+
 }

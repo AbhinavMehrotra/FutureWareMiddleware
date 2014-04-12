@@ -15,6 +15,7 @@ import org.ubhave.anticipatorymiddleware.server.communication.MessageType;
 import org.ubhave.anticipatorymiddleware.server.predictordata.PredictionResult;
 import org.ubhave.anticipatorymiddleware.server.predictordata.PredictorData;
 import org.ubhave.anticipatorymiddleware.server.time.Time;
+import org.ubhave.anticipatorymiddleware.server.utils.Constants;
 import org.ubhave.anticipatorymiddleware.server.utils.ObjectSerializer;
 
 public class PredictionResultStack {
@@ -63,12 +64,12 @@ public class PredictionResultStack {
 
 	private static PredictorData makeGroupPrediction(StackedGroupPredictorData prediction_result){
 		Set<PredictorData> predictor_data_set = prediction_result.getPredictorDataSet();
-		int predictor_type = 0;
+//		int predictor_type = 0;
 		String predicted_state = "UNKNOWN";
 		int prediction_probability = 0;
 		int prediction_confidence_level = 0;
 		for(PredictorData pd : predictor_data_set){
-			predictor_type = pd.getPredictorType();
+//			predictor_type = pd.getPredictorType();
 			ArrayList<PredictionResult> pr_list = pd.getResult();
 			PredictionResult pr = pr_list.get(0);
 			predicted_state = pr.getPredictedState();
@@ -96,7 +97,8 @@ public class PredictionResultStack {
 				}
 			}
 		}
-		PredictorData result = PredictorData.getInstance(predictor_type);
+//		PredictorData result = PredictorData.getInstance(predictor_type);
+		PredictorData result = PredictorData.getInstance(Constants.PREDICTOR_TYPE_SOCIAL);
 		ArrayList<PredictionResult> predictor_result_set = new ArrayList<PredictionResult>();
 		for(Time time : time_result){
 			PredictionResult pr = new PredictionResult(predicted_state, time, prediction_probability, prediction_confidence_level);

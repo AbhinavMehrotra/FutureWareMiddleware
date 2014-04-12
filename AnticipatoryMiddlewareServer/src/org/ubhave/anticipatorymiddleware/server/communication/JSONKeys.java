@@ -24,6 +24,14 @@ public class JSONKeys {
 	
 	public static final String PREDICTOR_TYPE = "PREDICTOR_TYPE";
 	
+	public static final String PREDICTION_TYPE = "PREDICTION_TYPE";
+	
+	public static final String PREDICTION_TYPE_TIME_SPECIFIC = "PREDICTION_TYPE_TIME_SPECIFIC";
+	
+	public static final String PREDICTION_TYPE_STATE_SPECIFIC = "PREDICTION_TYPE_STATE_SPECIFIC";
+	
+	public static final String PREDICTION_TYPE_VALUE = "PREDICTION_TYPE_STATE_SPECIFIC";
+	
 	public static final String STATE_TO_BE_PREDICTED = "STATE_TO_BE_PREDICTED";
 	
 	public static final String SUBSCRIPTION_ID = "SUBSCRIPTION_ID";
