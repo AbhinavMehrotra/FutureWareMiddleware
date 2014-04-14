@@ -46,10 +46,10 @@ public class AnticipatoryManager {
 	
 	
 	public MongoDBManager getMongoDBManager() throws UnknownHostException, AMException{
-		String mongo_db_ip = this.server_settings.getString(ServerSettings.Server_Port);
-		String mongo_db_name = this.server_settings.getString(ServerSettings.Server_Port);
-		String mongo_db_user_name = this.server_settings.getString(ServerSettings.Server_Port);
-		String mongo_db_password = this.server_settings.getString(ServerSettings.Server_Port);
+		String mongo_db_ip = this.server_settings.getString(ServerSettings.Mongo_DB_IP);
+		String mongo_db_name = this.server_settings.getString(ServerSettings.Mongo_DB_Name);
+		String mongo_db_user_name = this.server_settings.getString(ServerSettings.Mongo_DB_USER_NAME);
+		String mongo_db_password = this.server_settings.getString(ServerSettings.Mongo_DB_PASSWORD);
 		return new MongoDBManager(mongo_db_ip, mongo_db_name, mongo_db_user_name, mongo_db_password);
 	}
 	
